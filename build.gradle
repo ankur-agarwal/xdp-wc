@@ -3,44 +3,34 @@ plugins {
     id 'application'
 }
 
-group 'com.example'
+group 'io.acceldata'
 version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
-configurations {
-    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-}
-
 dependencies {
-    implementation "org.apache.spark:spark-core_2.12:3.5.0"
-    implementation "org.apache.spark:spark-sql_2.12:3.5.0"
+    implementation 'org.apache.spark:spark-core_2.12:3.5.0'
+    implementation 'org.apache.spark:spark-sql_2.12:3.5.0'
     implementation 'org.slf4j:slf4j-api:1.7.36'
-    implementation 'ch.qos.logback:logback-classic:1.4.14'
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
 }
 
 application {
-    mainClass = 'com.example.wordcount.WordCount'
+    mainClass = 'io.acceldata.SparkApp'
 }
 
 jar {
+    archiveBaseName = 'spark-hello-world'
+    archiveClassifier = 'all'
     manifest {
-        attributes 'Main-Class': 'com.example.wordcount.WordCount'
+        attributes 'Main-Class': 'io.acceldata.SparkApp'
     }
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     zip64 = true
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs += ['-Xlint:unchecked']
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 } 

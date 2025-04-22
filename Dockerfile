@@ -1,11 +1,23 @@
-FROM gradle:8.5-jdk11 AS build
+# Build stage
+FROM gradle:8.5.0-jdk17 AS build
 WORKDIR /app
 COPY . .
 RUN gradle build --no-daemon
 
-FROM openjdk:11-jre-slim
-WORKDIR /app
-COPY --from=build /app/build/libs/*.jar ./app.jar
-COPY --from=build /app/src/main/resources/lorem.txt ./lorem.txt
+# Runtime stage
+FROM bitnami/spark:3.5.0
+USER root
 
-ENTRYPOINT ["java", "-jar", "app.jar"] 
+# Copy the built JAR from the build stage
+COPY --from=build /app/build/libs/*.jar /opt/spark/apps/spark-hello-world.jar
+
+# Set the working directory
+WORKDIR /opt/spark
+
+# Set the entrypoint to run the Spark application
+ENTRYPOINT ["spark-submit", \
+            "--class", "io.acceldata.SparkApp", \
+            "/opt/spark/apps/spark-hello-world.jar"]
+
+# Default command (can be overridden)
+CMD [] 
