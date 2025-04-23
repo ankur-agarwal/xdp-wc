@@ -8,16 +8,17 @@ RUN gradle build --no-daemon
 FROM bitnami/spark:3.5.0
 USER root
 
+# Create directory for the application
+WORKDIR /opt/spark/apps
+
 # Copy the built JAR from the build stage
-COPY --from=build /app/build/libs/*.jar /opt/spark/apps/spark-hello-world.jar
+COPY --from=build /app/build/libs/*.jar /tmp
 
-# Set the working directory
-WORKDIR /opt/spark
+RUN chmod -R 777 /tmp \
+    && chown -R 1001:1001 /tmp
 
-# Set the entrypoint to run the Spark application
-ENTRYPOINT ["spark-submit", \
-            "--class", "io.acceldata.SparkApp", \
-            "/opt/spark/apps/spark-hello-world.jar"]
+RUN chmod -R 777 /opt/spark
+RUN chown -R 1001:1001 /opt/spark
 
-# Default command (can be overridden)
-CMD [] 
+# Switch back to non-root user for security
+USER 1001
