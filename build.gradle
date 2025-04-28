@@ -15,6 +15,9 @@ dependencies {
     implementation 'org.apache.spark:spark-sql_2.12:3.5.0'
     implementation 'org.slf4j:slf4j-api:1.7.36'
     implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'org.apache.hadoop:hadoop-common:3.3.6'
+    implementation 'org.apache.hadoop:hadoop-hdfs:3.3.6'
+    implementation 'org.apache.hadoop:hadoop-auth:3.3.6'
 }
 
 application {
