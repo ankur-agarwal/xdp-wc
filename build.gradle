@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'io.acceldata'
@@ -18,22 +19,16 @@ dependencies {
     implementation 'org.apache.hadoop:hadoop-common:3.3.6'
     implementation 'org.apache.hadoop:hadoop-hdfs:3.3.6'
     implementation 'org.apache.hadoop:hadoop-auth:3.3.6'
+    implementation 'org.apache.hadoop:hadoop-client:3.3.6'
 }
 
 application {
     mainClass = 'io.acceldata.SparkApp'
 }
 
-jar {
-    archiveBaseName = 'spark-hello-world'
-    archiveClassifier = 'all'
-    manifest {
-        attributes 'Main-Class': 'io.acceldata.SparkApp'
-    }
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+// Remove the custom jar block, Shadow will handle fat JAR creation
+// The shadowJar task will produce build/libs/spark-hello-world-1.0-SNAPSHOT-all.jar 
+
+shadowJar {
     zip64 = true
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 } 

@@ -29,7 +29,7 @@ public class SparkApp {
         hadoopConf.set("hadoop.security.authentication", "kerberos");
         UserGroupInformation.setConfiguration(hadoopConf);
         String keytabPath = Paths.get(confDir, "hdfs.headless.keytab").toAbsolutePath().toString();
-        String principal = "hdfs@ADSRE.COM";
+        String principal = "hdfs-adocqecluster@ADSRE.COM";
         try {
             UserGroupInformation.loginUserFromKeytab(principal, keytabPath);
             logger.info("Kerberos authentication successful for principal {} using keytab {}", principal, keytabPath);
@@ -78,7 +78,7 @@ public class SparkApp {
             
             // Write the message to HDFS using Spark
             try {
-                String outputPath = "/user/hdfs/spark-message.txt";
+                String outputPath = "hdfs://qenamenode1:8020/user/hdfs/ankur-spark-message.txt";
                 spark.createDataset(java.util.Collections.singletonList(message), org.apache.spark.sql.Encoders.STRING())
                         .write()
                         .mode("overwrite")
