@@ -12,23 +12,27 @@ public class SparkApp {
     private static final Logger logger = LoggerFactory.getLogger(SparkApp.class);
 
     public static void main(String[] args) {
+        // Get paths from environment variables
+        String coreSitePath = System.getenv().getOrDefault("CORE_SITE_XML_PATH", "/etc/hadoop/conf/core-site.xml");
+        String hdfsSitePath = System.getenv().getOrDefault("HDFS_SITE_XML_PATH", "/etc/hadoop/conf/hdfs-site.xml");
+        String hiveSitePath = System.getenv().getOrDefault("HIVE_SITE_XML_PATH", "/etc/hadoop/conf/hive-site.xml");
+        String krb5ConfPath = System.getenv().getOrDefault("KRB5_CONF_PATH", "/etc/krb5.conf");
+        String keytabPath = System.getenv().getOrDefault("KERBEROS_KEYTAB_PATH", "/etc/user.keytab");
+
         // Set Kerberos configuration
-        String confDir = "src/main/resources/conf";
-        String krb5ConfPath = Paths.get(confDir, "krb5.conf").toAbsolutePath().toString();
         System.setProperty("java.security.krb5.conf", krb5ConfPath);
         logger.info("Set java.security.krb5.conf to {}", krb5ConfPath);
 
         // Load Hadoop configuration
         Configuration hadoopConf = new Configuration();
-        hadoopConf.addResource(Paths.get(confDir, "core-site.xml").toString());
-        hadoopConf.addResource(Paths.get(confDir, "hdfs-site.xml").toString());
-        hadoopConf.addResource(Paths.get(confDir, "hive-site.xml").toString());
-        logger.info("Loaded Hadoop configuration files from {}", confDir);
+        hadoopConf.addResource(coreSitePath);
+        hadoopConf.addResource(hdfsSitePath);
+        hadoopConf.addResource(hiveSitePath);
+        logger.info("Loaded Hadoop configuration files");
 
         // Set Hadoop security authentication to Kerberos
         hadoopConf.set("hadoop.security.authentication", "kerberos");
         UserGroupInformation.setConfiguration(hadoopConf);
-        String keytabPath = Paths.get(confDir, "hdfs.headless.keytab").toAbsolutePath().toString();
         String principal = "hdfs-adocqecluster@ADSRE.COM";
         try {
             UserGroupInformation.loginUserFromKeytab(principal, keytabPath);
