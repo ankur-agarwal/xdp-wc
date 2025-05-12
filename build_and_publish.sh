@@ -1,0 +1,1 @@
+docker build --platform="linux/amd64" -t spark-hello-world . && docker tag spark-hello-world agarwalankur58/spark-hello-world:1.17 && docker push agarwalankur58/spark-hello-world:1.17
